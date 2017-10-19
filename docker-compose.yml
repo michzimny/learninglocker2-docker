@@ -1,0 +1,69 @@
+version: '2'
+services:
+
+    mongo:
+        image: mongo:3.4
+        restart: unless-stopped
+        volumes:
+            - "${DATA_LOCATION}/mongo:/data/db"
+
+    redis:
+        image: redis:4-alpine
+        restart: unless-stopped
+
+    xapi:
+        image: learninglocker/xapi-service:v1.1.0
+        restart: unless-stopped
+        environment:
+            - MONGO_URL=mongodb://mongo:27017/learninglocker_v2
+            - REDIS_URL=redis://redis:6379/0
+        depends_on:
+            - mongo
+            - redis
+
+    api:
+        image: michzimny/learninglocker2-app:${DOCKER_TAG}
+        environment:
+            - DOMAIN_NAME
+            - APP_SECRET
+        command: "node api/dist/server"
+        restart: unless-stopped
+        depends_on:
+            - mongo
+            - redis
+
+    ui:
+        image: michzimny/learninglocker2-app:${DOCKER_TAG}
+        environment:
+            - DOMAIN_NAME
+            - APP_SECRET
+        command: "./entrypoint-ui.sh"
+        restart: unless-stopped
+        depends_on:
+            - mongo
+            - redis
+            - api
+
+    worker:
+        image: michzimny/learninglocker2-app:${DOCKER_TAG}
+        environment:
+            - DOMAIN_NAME
+            - APP_SECRET
+        command: "node worker/dist/server"
+        restart: unless-stopped
+        depends_on:
+            - mongo
+            - redis
+
+    nginx:
+        image: michzimny/learninglocker2-nginx:${DOCKER_TAG}
+        environment:
+            - DOMAIN_NAME
+        restart: unless-stopped
+        depends_on:
+            - ui
+            - xapi
+        ports:
+            - "443:443"
+            - "80:80"
+

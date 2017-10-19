@@ -1,0 +1,16 @@
+sudo: required
+
+services:
+- docker
+
+install: true
+
+script:
+- docker build -t michzimny/learninglocker2-app:"$TRAVIS_COMMIT" app
+- docker build -t michzimny/learninglocker2-nginx:"$TRAVIS_COMMIT" nginx
+- if [ "$TRAVIS_PULL_REQUEST" == "false" ] && ( [ "$TRAVIS_BRANCH" == "master" ] || [ "$TRAVIS_BRANCH" == "develop" ] ); then
+    docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD";
+    docker push michzimny/learninglocker2-app:"$TRAVIS_COMMIT";
+    docker push michzimny/learninglocker2-nginx:"$TRAVIS_COMMIT";
+    fi
+
