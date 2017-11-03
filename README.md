@@ -36,6 +36,7 @@ To configure adjust settings in .env:
 * DATA_LOCATION - location on Docker host where volumes are created
 * DOMAIN_NAME - domain name as the instance is to be accessed from the world
 * APP_SECRET - LL's origin setting: Unique string used for hashing, Recommended length - 256 bits
+* SMTP_* - SMTP connection settings
 
 To run the services:
 

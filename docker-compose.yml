@@ -26,6 +26,11 @@ services:
         environment:
             - DOMAIN_NAME
             - APP_SECRET
+            - SMTP_HOST
+            - SMTP_PORT
+            - SMTP_SECURED
+            - SMTP_USER
+            - SMTP_PASS
         command: "node api/dist/server"
         restart: unless-stopped
         depends_on:
@@ -37,6 +42,11 @@ services:
         environment:
             - DOMAIN_NAME
             - APP_SECRET
+            - SMTP_HOST
+            - SMTP_PORT
+            - SMTP_SECURED
+            - SMTP_USER
+            - SMTP_PASS
         command: "./entrypoint-ui.sh"
         restart: unless-stopped
         depends_on:
@@ -49,6 +59,11 @@ services:
         environment:
             - DOMAIN_NAME
             - APP_SECRET
+            - SMTP_HOST
+            - SMTP_PORT
+            - SMTP_SECURED
+            - SMTP_USER
+            - SMTP_PASS
         command: "node worker/dist/server"
         restart: unless-stopped
         depends_on:
