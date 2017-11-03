@@ -51,11 +51,21 @@ To create a new user and organisation for the site:
 docker-compose exec api node cli/dist/server createSiteAdmin [email] [organisation] [password]
 ```
 
-## Deploy
-
-TODO
-
 ## Production usage
+
+### Deployment
+
+Preparing a remote machine for the first time, put .env file to the machine and adjust the settings as given above.
+
+To deploy a new version (git commit) to the machine, 
+set DOCKER_TAG in .env to the git commit (SHA-1),
+copy docker-compose.yml of the git commit to the machine 
+(see the SSL/TLS notice below),
+and just call the command:
+
+```
+docker-compose up -d
+```
 
 ### SSL/TLS certs
 
@@ -69,7 +79,8 @@ Mount cert files to nginx container adding a section in docker-compose.yml:
 
 ### Backups
 
-Backup Mongo's volume.
+Backup Mongo's volume. 
+It's probably good to stop Mongo for the duration of backuping volume files.
 
 ## Futher adjustments
 
