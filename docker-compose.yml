@@ -36,6 +36,8 @@ services:
         depends_on:
             - mongo
             - redis
+        volumes:
+            - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
 
     ui:
         image: michzimny/learninglocker2-app:${DOCKER_TAG}
@@ -53,6 +55,8 @@ services:
             - mongo
             - redis
             - api
+        volumes:
+            - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
 
     worker:
         image: michzimny/learninglocker2-app:${DOCKER_TAG}
@@ -69,6 +73,8 @@ services:
         depends_on:
             - mongo
             - redis
+        volumes:
+            - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
 
     nginx:
         image: michzimny/learninglocker2-nginx:${DOCKER_TAG}

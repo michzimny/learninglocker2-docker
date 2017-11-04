@@ -29,6 +29,10 @@ RUN git clone https://github.com/LearningLocker/learninglocker.git /opt/learning
 
 WORKDIR /opt/learninglocker
 
+# make a copy of the origin storage directory that will be used in entrypoint-common.sh
+# to fill up a volume mounted here, if it's empty
+RUN cp -r storage storage.template
+
 # service api exposes port 8080
 # service ui exposes port 3000
 # see env.template

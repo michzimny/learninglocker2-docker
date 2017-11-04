@@ -16,7 +16,8 @@ File docker-compose.yml describes the relation between services.
 A base configuration consists of 7 containers that are run using the above-mentioned images 
 (LL application containers - api, ui, and worker - are run using image app).
 
-The only persistent data is Mongo's volume.
+The only persistent locations are directories in $DATA_LOCATION (see below), 
+which are mounted as volumes to Mongo container and app-based containers.
 
 The origin service ui expects service api to work on localhost, 
 however in this dockerized version the both services are run in separate containers. 
@@ -80,8 +81,7 @@ Mount cert files to nginx container adding a section in docker-compose.yml:
 
 ### Backups
 
-Backup Mongo's volume. 
-It's probably good to stop Mongo for the duration of backuping volume files.
+Backup $DATA_LOCATION, i.e. the Docker volumes: Mongo's data and app's storage. 
 
 ## Futher adjustments
 
