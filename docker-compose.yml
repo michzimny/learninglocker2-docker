@@ -20,6 +20,8 @@ services:
         depends_on:
             - mongo
             - redis
+        volumes:
+            - "${DATA_LOCATION}/xapi-storage:/usr/src/app/storage"
 
     api:
         image: michzimny/learninglocker2-app:${DOCKER_TAG}
@@ -57,6 +59,7 @@ services:
             - api
         volumes:
             - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
+            - "${DATA_LOCATION}/ui-logs:/opt/learninglocker/logs"
 
     worker:
         image: michzimny/learninglocker2-app:${DOCKER_TAG}
