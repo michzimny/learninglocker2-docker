@@ -13,14 +13,14 @@ RUN apt-get update \
         unzip \
         gettext-base \
         socat \
-    && wget -qO- https://deb.nodesource.com/setup_6.x | bash \
+    && wget -qO- https://deb.nodesource.com/setup_8.x | bash \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g yarn 
 
 # install LL app
-ENV LL_TAG=v2.0.5
+ENV LL_TAG=v2.8.2
 RUN git clone https://github.com/LearningLocker/learninglocker.git /opt/learninglocker \
     && cd /opt/learninglocker \
     && git checkout $LL_TAG \

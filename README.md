@@ -37,7 +37,7 @@ To configure adjust settings in .env:
 * DATA_LOCATION - location on Docker host where volumes are created
 * DOMAIN_NAME - domain name as the instance is to be accessed from the world
 * APP_SECRET - LL's origin setting: Unique string used for hashing, Recommended length - 256 bits
-* SMTP_* - SMTP connection settings
+* SMTP_* - SMTP connection settings (for TLS config, see [here](https://nodemailer.com/smtp/#tls-options))
 
 To run the services:
 
@@ -83,9 +83,18 @@ Mount cert files to nginx container adding a section in docker-compose.yml:
 
 Backup $DATA_LOCATION, i.e. the Docker volumes: Mongo's data and app's storage. 
 
-## Futher adjustments
+## Upgrading
 
 In app/Dockerfile, git tag of LL application is declared.
 In docker-compose.yml, image tag of xAPI service is declared.
 The versions (tags) in use can be easily adjusted as needed.
+
+After upgrading these versions, you shall usually proceed as follows:
+
+```
+docker-compose pull
+docker-compose stop xapi worker ui api nginx
+docker-compose run --rm api yarn migrate
+docker-compose up
+```
 
