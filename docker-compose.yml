@@ -12,10 +12,11 @@ services:
         restart: unless-stopped
 
     xapi:
-        image: learninglocker/xapi-service:v1.1.0
+        image: learninglocker/xapi-service:2.1.10
         restart: unless-stopped
         environment:
             - MONGO_URL=mongodb://mongo:27017/learninglocker_v2
+            - MONGO_DB=learninglocker_v2
             - REDIS_URL=redis://redis:6379/0
         depends_on:
             - mongo
