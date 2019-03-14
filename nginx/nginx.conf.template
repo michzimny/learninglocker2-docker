@@ -1,9 +1,9 @@
 # This file is to be preprocessed by entrypoint.sh.
 # Env variables starting with dollar sign will be replaced.
-# 
+#
 # Dollar signs that are not to be replaced are presented as ${DOLLAR},
 # and will be replaced to simple '$' after the preprocessing.
-# 
+#
 
 upstream backend_ui {
   server ui:3000;
@@ -17,19 +17,8 @@ server {
   listen       80 default_server;
   listen       [::]:80 default_server;
   server_name  $DOMAIN_NAME;
-  return 301 https://$DOMAIN_NAME${DOLLAR}request_uri;
-}
-
-server {
-  listen       443 ssl default_server;
-  listen       [::]:443 ssl default_server;
-  server_name  $DOMAIN_NAME;
 
   access_log  /var/log/nginx/access.log;
-
-  ssl on;
-  ssl_certificate /root/ssl/fullchain.pem;
-  ssl_certificate_key /root/ssl/privkey.pem;
 
   # xAPI endpoints
   location ~* ^/data/xAPI(.*)${DOLLAR} {
