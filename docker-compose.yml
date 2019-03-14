@@ -1,94 +1,103 @@
-version: '2'
+version: '3.7'
+
 services:
 
-    mongo:
-        image: mongo:3.4
-        restart: unless-stopped
-        volumes:
-            - "${DATA_LOCATION}/mongo:/data/db"
+  mongo:
+    image: mongo:latest
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
 
-    redis:
-        image: redis:4-alpine
-        restart: unless-stopped
+  redis:
+    image: redis:latest
+    restart: unless-stopped
 
-    xapi:
-        image: learninglocker/xapi-service:2.1.10
-        restart: unless-stopped
-        environment:
-            - MONGO_URL=mongodb://mongo:27017/learninglocker_v2
-            - MONGO_DB=learninglocker_v2
-            - REDIS_URL=redis://redis:6379/0
-        depends_on:
-            - mongo
-            - redis
-        volumes:
-            - "${DATA_LOCATION}/xapi-storage:/usr/src/app/storage"
+  xapi:
+    image: learninglocker/xapi-service:2.1.10
+    restart: unless-stopped
+    environment:
+      - MONGO_URL
+      - MONGO_DB
+      - REDIS_URL
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - xapi-storage:/usr/src/app/storage
 
-    api:
-        image: michzimny/learninglocker2-app:${DOCKER_TAG}
-        environment:
-            - DOMAIN_NAME
-            - APP_SECRET
-            - SMTP_HOST
-            - SMTP_PORT
-            - SMTP_SECURED
-            - SMTP_USER
-            - SMTP_PASS
-        command: "node api/dist/server"
-        restart: unless-stopped
-        depends_on:
-            - mongo
-            - redis
-        volumes:
-            - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
+  api:
+    environment: &app-variable-environments
+      - FS_AWS_S3_ACCESS_KEY_ID
+      - FS_AWS_S3_SECRET_ACCESS_KEY
+      - FS_AWS_S3_REGION
+      - FS_AWS_S3_BUCKET
+      - MONGO_URL
+      - MONGO_DB
+      - REDIS_HOST
+      - REDIS_PORT
+      - REDIS_DB
+      - UI_PORT
+      - API_PORT
+      - DOMAIN_NAME
+      - APP_SECRET
+      - SMTP_HOST
+      - SMTP_PORT
+      - SMTP_SECURED
+      - SMTP_USER
+      - SMTP_PASS
+    build:
+      context: ./app
+    image: learninglocker2-app:${DOCKER_TAG}
+    command: "node api/dist/server"
+    restart: unless-stopped
+    depends_on:
+        - mongo
+        - redis
+    volumes:
+      - app-storage:/opt/learninglocker/storage
 
-    ui:
-        image: michzimny/learninglocker2-app:${DOCKER_TAG}
-        environment:
-            - DOMAIN_NAME
-            - APP_SECRET
-            - SMTP_HOST
-            - SMTP_PORT
-            - SMTP_SECURED
-            - SMTP_USER
-            - SMTP_PASS
-        command: "./entrypoint-ui.sh"
-        restart: unless-stopped
-        depends_on:
-            - mongo
-            - redis
-            - api
-        volumes:
-            - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
-            - "${DATA_LOCATION}/ui-logs:/opt/learninglocker/logs"
+  ui:
+    image: learninglocker2-app:${DOCKER_TAG}
+    environment:
+      - UI_PORT
+      - API_PORT
+      - DOMAIN_NAME
+    command: "./entrypoint-ui.sh"
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+      - api
+    volumes:
+      - ui-logs:/opt/learninglocker/logs
 
-    worker:
-        image: michzimny/learninglocker2-app:${DOCKER_TAG}
-        environment:
-            - DOMAIN_NAME
-            - APP_SECRET
-            - SMTP_HOST
-            - SMTP_PORT
-            - SMTP_SECURED
-            - SMTP_USER
-            - SMTP_PASS
-        command: "node worker/dist/server"
-        restart: unless-stopped
-        depends_on:
-            - mongo
-            - redis
-        volumes:
-            - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
+  worker:
+    environment: *app-variable-environments
+    image: learninglocker2-app:${DOCKER_TAG}
+    command: "node worker/dist/server"
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - app-storage:/opt/learninglocker/storage
 
-    nginx:
-        image: michzimny/learninglocker2-nginx:${DOCKER_TAG}
-        environment:
-            - DOMAIN_NAME
-        restart: unless-stopped
-        depends_on:
-            - ui
-            - xapi
-        ports:
-            - "443:443"
-            - "80:80"
+  nginx:
+    build:
+      context: ./nginx
+    image: learninglocker2-nginx:${DOCKER_TAG}
+    environment:
+      - DOMAIN_NAME
+    restart: unless-stopped
+    depends_on:
+      - ui
+      - xapi
+    ports:
+      - 80:80
+
+volumes:
+  xapi-storage:
+  mongo-data:
+  ui-logs:
+  app-storage:
 
