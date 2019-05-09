@@ -42,7 +42,15 @@ To configure adjust settings in .env:
 To run the services:
 
 ```
-docker-compose up
+docker-compose up -d
+```
+
+BUT, for the first time, as Mongo requires some significant time to start up, you should rather:
+
+```
+docker-compose up -d mongo  # launch Mongo first
+docker-compose logs -f mongo  # wait until Mongo gets ready
+docker-compose up -d   # launch all the other services
 ```
 
 Open the site and accept non-trusted SSL/TLS certs (see below for trusted certs).
@@ -68,6 +76,8 @@ and just call the command:
 ```
 docker-compose up -d
 ```
+
+Keep also in mind the note given above that for the first launch, it might be good to start Mongo only in the first step.
 
 ### SSL/TLS certs
 
